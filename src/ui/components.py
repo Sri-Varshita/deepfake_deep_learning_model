@@ -5,10 +5,9 @@ import streamlit as st
 
 def render_header():
     """Render the application header."""
-    st.markdown('<h1 class="main-header">🔍 DeepFake Detection System</h1>', unsafe_allow_html=True)
+    st.markdown('<h1 class="main-header">🛡️ DeepShield AI - Deepfake Detection System</h1>', unsafe_allow_html=True)
     st.markdown(
-        '<p class="sub-header">Advanced AI-Generated Image Detection Using EfficientNetB7 with Attention Mechanism<br>'
-        '<strong>33rd Irish Conference on Artificial Intelligence and Cognitive Science (AICS 2025)</strong></p>',
+        '<p class="sub-header">Advanced AI-Generated Image Detection Using EfficientNetB7 with Attention Mechanism</p>',
         unsafe_allow_html=True
     )
     st.markdown("---")
@@ -279,40 +278,4 @@ def render_footer():
         </div>
         """, unsafe_allow_html=True)
 
-    # Professional Conference Footer
-    st.markdown("---")
-    st.markdown("""
-    <div style='text-align: center; padding: 2rem 0;'>
-        <div style='background: #ffffff;
-                    padding: 3rem 2rem; border-radius: 20px;
-                    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
-                    border: 5px solid #1e3a5f;'>
-            <p style='color: #000000; font-size: 1.85rem; font-weight: 900; margin-bottom: 0.75rem;
-                       letter-spacing: 0.5px; -webkit-font-smoothing: antialiased;
-                       -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility;
-                       line-height: 1.3;'>
-                🎓 33rd Irish Conference on Artificial Intelligence and Cognitive Science
-            </p>
-            <p style='color: #000000; font-size: 1.75rem; font-weight: 900; margin-bottom: 1.5rem;
-                       letter-spacing: 2px; -webkit-font-smoothing: antialiased;
-                       -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility;'>
-                AICS 2025
-            </p>
-            <div style='background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
-                        padding: 1.5rem; border-radius: 12px;
-                        margin-bottom: 1.5rem; border: 3px solid #1976d2;'>
-                <p style='color: #000000; font-size: 1.2rem; margin: 0; font-weight: 700;
-                          -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;'>
-                    Developed by <strong style='color: #d84315; font-size: 1.35rem; font-weight: 900;'>Emin Cem Koyluoglu</strong>
-                </p>
-            </div>
-            <style>
-                .footer-link:hover { opacity: 0.7; text-decoration: underline !important; }
-            </style>
-            <p style='color: #000000; font-size: 1.1rem; margin: 0; font-weight: 700;
-                      -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;'>
-                ⚡ Powered by <a href='https://github.com/CemRoot/deepfake-detection-streamlit' target='_blank' class='footer-link' style='text-decoration: none;'><strong style='color: #1976d2; font-weight: 900;'>Streamlit Cloud</strong></a> & <a href='https://huggingface.co/spaces/CemRoot/deepfake-detection-aics2025' target='_blank' class='footer-link' style='text-decoration: none;'><strong style='color: #ff6f00; font-weight: 900;'>Hugging Face</strong></a>
-            </p>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
+    return

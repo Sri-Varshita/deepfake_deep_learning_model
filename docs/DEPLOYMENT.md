@@ -27,7 +27,7 @@ Initialize version control:
 ```bash
 git init
 git add .
-git commit -m "Initial commit: DeepFake Detection System for AICS 2025"
+git commit -m "Initial commit: DeepShield AI - Deepfake Detection System"
 ```
 
 ---
@@ -38,7 +38,7 @@ git commit -m "Initial commit: DeepFake Detection System for AICS 2025"
 
 1. Navigate to [github.com/new](https://github.com/new)
 2. **Repository name:** `deepfake-detection-streamlit`
-3. **Description:** `Advanced AI-Generated Image Detection Using EfficientNetB7 with Attention Mechanism - AICS 2025`
+3. **Description:** `Advanced AI-Generated Image Detection Using EfficientNetB7 with Attention Mechanism`
 4. **Visibility:** Public (required for Streamlit Cloud free tier)
 5. **Do NOT initialize** with README, .gitignore, or license (project includes these files)
 6. Select **"Create repository"**
@@ -251,13 +251,13 @@ Post-deployment validation:
 
 ### Technical Support:
 
-For AICS 2025 demonstration support, contact Emin Cem Koyluoglu.
+For demonstration support, contact Emin Cem Koyluoglu.
 
 ---
 
-## 🎯 AICS 2025 Conference Preparation
+## 🎯 Deployment Preparation
 
-### Pre-Presentation Checklist:
+### Pre-Deployment Checklist:
 
 1. ✅ Verify application functionality 24 hours prior to presentation
 2. ✅ Prepare demonstration dataset (1 synthetic, 1 authentic, 1 challenging case)
@@ -265,7 +265,7 @@ For AICS 2025 demonstration support, contact Emin Cem Koyluoglu.
 4. ✅ Maintain backup: localhost deployment prepared
 5. ✅ Distribute URL to co-authors and reviewers for validation
 
-### Presentation Protocol:
+### Demo Protocol:
 
 1. Access application URL
 2. Demonstrate detection with prepared test cases
@@ -284,5 +284,5 @@ In case of network connectivity issues during presentation:
 <div align="center">
   <strong>🚀 Successful Deployment!</strong>
   <br>
-  <sub>Developed for AICS 2025 Conference</sub>
+   <sub>Developed for DeepShield AI</sub>
 </div>

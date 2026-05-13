@@ -25,7 +25,7 @@
 [![Python 3.10](https://img.shields.io/badge/python-3.10-blue.svg)](https://www.python.org/downloads/)
 [![TensorFlow 2.15](https://img.shields.io/badge/TensorFlow-2.15-FF6F00.svg)](https://www.tensorflow.org/)
 
-**Presented at the 33rd Irish Conference on Artificial Intelligence and Cognitive Science (AICS 2025)**
+**DeepShield AI - Deepfake Detection System**
 
 Developed by **Emin Cem Koyluoglu**
 

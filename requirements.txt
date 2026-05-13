@@ -1,6 +1,6 @@
-streamlit
-tensorflow
-pillow
-opencv-python-headless
-numpy
-huggingface-hub
+streamlit==1.37.1
+tensorflow==2.15.1
+pillow==10.4.0
+opencv-python-headless==4.10.0.84
+numpy==1.26.4
+huggingface-hub==0.24.7

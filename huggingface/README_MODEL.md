@@ -267,9 +267,8 @@ If you use this model in your research or applications, please cite:
 @inproceedings{koyluoglu2025deepfake,
   title={Advanced DeepFake Detection using EfficientNetB7 with Attention Mechanism},
   author={Koyluoglu, Emin Cem},
-  booktitle={Proceedings of the 33rd Irish Conference on Artificial Intelligence and Cognitive Science (AICS 2025)},
-  year={2025},
-  organization={AICS},
+    booktitle={Conference Proceedings},
+    year={2025},
   note={Demo presentation}
 }
 ```

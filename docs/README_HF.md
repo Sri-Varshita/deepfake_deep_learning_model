@@ -1,5 +1,5 @@
 ---
-title: DeepFake Detection - AICS 2025
+title: DeepShield AI - Deepfake Detection System
 emoji: 🔍
 colorFrom: purple
 colorTo: blue
@@ -9,11 +9,11 @@ pinned: false
 license: mit
 ---
 
-# 🔍 DeepFake Detection System - AICS 2025
+# 🛡️ DeepShield AI - Deepfake Detection System
 
 **Advanced AI-Generated Image Detection Using EfficientNetB7 with Attention Mechanism**
 
-Developed for **33rd Irish Conference on Artificial Intelligence and Cognitive Science (AICS 2025)**
+Developed as **DeepShield AI - Deepfake Detection System**
 
 ---
 
@@ -54,9 +54,7 @@ Developed for **33rd Irish Conference on Artificial Intelligence and Cognitive S
 
 ## 👨‍💻 Author
 
-**Emin Cem Koyluoglu** - AICS 2025
-
-33rd Irish Conference on Artificial Intelligence and Cognitive Science
+**Emin Cem Koyluoglu**
 
 ---
 

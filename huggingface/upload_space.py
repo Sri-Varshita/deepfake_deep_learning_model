@@ -78,7 +78,7 @@ Developed for **33rd Irish Conference on Artificial Intelligence and Cognitive S
 
 ## 🎓 Research Context
 
-This system was developed for presentation at AICS 2025 (33rd Irish Conference on Artificial Intelligence and Cognitive Science). The research demonstrates:
+This system was developed for DeepShield AI. The research demonstrates:
 
 - Effectiveness of attention mechanisms in deepfake detection
 - Impact of preprocessing consistency on model performance
@@ -90,7 +90,7 @@ This system was developed for presentation at AICS 2025 (33rd Irish Conference o
 
 - **Model Repository:** [CemRoot/deepfake-detection-model](https://huggingface.co/CemRoot/deepfake-detection-model)
 - **GitHub Repository:** [CemRoot/deepfake-detection-streamlit](https://github.com/CemRoot/deepfake-detection-streamlit)
-- **Conference:** [AICS 2025](https://aics2025.com)
+- **Project:** DeepShield AI
 
 ---
 

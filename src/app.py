@@ -1,161 +1,185 @@
 """
-DeepFake Detection System - AICS 2025
+DeepShield AI - Deepfake Detection System
 Main Streamlit Application
 
 Developed by: Emin Cem Koyluoglu
-Conference: 33rd Irish Conference on Artificial Intelligence and Cognitive Science (AICS 2025)
 """
 
-import streamlit as st
-import numpy as np
+from __future__ import annotations
+
 from PIL import Image
+import streamlit as st
 
-from model import load_model
-from preprocessing import preprocess_image
-from ui import apply_custom_css, render_header, render_footer, render_sidebar
+from model import load_model, predict_image, predict_video
+from ui import apply_custom_css, render_footer, render_header, render_sidebar
 
 
-# ========================= PAGE CONFIG =========================
 st.set_page_config(
-    page_title="DeepFake Detection - AICS 2025 | Emin Cem Koyluoglu",
+    page_title="DeepShield AI - Deepfake Detection System",
     page_icon="🔍",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="expanded",
 )
 
 
-# ========================= MAIN APPLICATION =========================
+def _render_prediction(result, source_name: str, show_debug: bool = False):
+    """Render a consistent result panel for image, webcam, and video inputs."""
+    fake_confidence = result["fake_confidence"]
+    real_confidence = result["real_confidence"]
+    confidence = result["confidence"]
+
+    if result["label"] == "Fake":
+        st.error(f"### 🚨 DETECTION RESULT: FAKE (AI-Generated) - {source_name}")
+        st.markdown(
+            "The input media exhibits characteristics consistent with **synthetic generation** by artificial intelligence systems."
+        )
+    else:
+        st.success(f"### ✅ DETECTION RESULT: AUTHENTIC - {source_name}")
+        st.markdown("The input media exhibits characteristics consistent with **genuine photographic content**.")
+
+    st.markdown("---")
+    st.markdown("**📈 Classification Confidence Scores:**")
+
+    st.markdown("🚨 **Synthetic (AI-Generated):**")
+    st.progress(fake_confidence / 100)
+    st.write(f"**{fake_confidence:.2f}%**")
+
+    st.markdown("")
+
+    st.markdown("✅ **Authentic (Genuine):**")
+    st.progress(real_confidence / 100)
+    st.write(f"**{real_confidence:.2f}%**")
+
+    st.markdown("---")
+    st.info(f"**Classification Output:** {result['label']} (Confidence: {confidence:.2f}%)")
+
+    if show_debug:
+        st.markdown("**🔍 Model Output Diagnostics:**")
+        st.write(f"- Probability Distribution: {result['probabilities']}")
+        if result.get("metadata"):
+            st.json(result["metadata"])
+
+
+def _render_image_tab(model, preprocess_method: str, show_debug: bool):
+    uploaded_file = st.file_uploader(
+        "Select an image file...",
+        type=["jpg", "jpeg", "png"],
+        help="Upload a JPG, JPEG, or PNG format image for deepfake analysis",
+        key="image_uploader",
+    )
+
+    if uploaded_file is None:
+        st.info("👆 Please upload an image file and initiate analysis to view detection results.")
+        return
+
+    image = Image.open(uploaded_file).convert("RGB")
+    st.image(image, caption="Input Image", use_column_width=True)
+
+    if show_debug:
+        st.markdown("**🔍 Image Metadata:**")
+        st.write(f"- File Format: {image.format}")
+        st.write(f"- Color Mode: {image.mode}")
+        st.write(f"- Dimensions: {image.size}")
+
+    if st.button("🔍 Analyze Image", key="analyze_image", use_container_width=True):
+        with st.spinner("🔄 Analyzing image..."):
+            try:
+                result = predict_image(model, image, preprocess_method)
+                _render_prediction(result, "Image", show_debug=show_debug)
+            except Exception as error:
+                st.error(f"❌ Could not process the uploaded image: {error}")
+
+
+def _render_webcam_tab(model, preprocess_method: str, show_debug: bool):
+    captured_image = st.camera_input(
+        "Take a webcam snapshot for analysis",
+        help="Use your device camera to capture a face or scene for deepfake analysis",
+    )
+
+    if captured_image is None:
+        st.info("👆 Capture an image from your webcam to run detection.")
+        return
+
+    image = Image.open(captured_image).convert("RGB")
+    st.image(image, caption="Webcam Snapshot", use_column_width=True)
+
+    if st.button("🔍 Analyze Webcam Snapshot", key="analyze_webcam", use_container_width=True):
+        with st.spinner("🔄 Analyzing webcam snapshot..."):
+            try:
+                result = predict_image(model, image, preprocess_method)
+                _render_prediction(result, "Webcam Snapshot", show_debug=show_debug)
+            except Exception as error:
+                st.error(f"❌ Could not process the webcam image: {error}")
+
+
+def _render_video_tab(model, preprocess_method: str, show_debug: bool):
+    uploaded_video = st.file_uploader(
+        "Select a video file...",
+        type=["mp4", "mov", "avi", "m4v", "webm"],
+        help="Upload a short video clip for frame-based deepfake analysis",
+        key="video_uploader",
+    )
+
+    if uploaded_video is None:
+        st.info("👆 Upload a video file to run frame-based detection.")
+        return
+
+    st.video(uploaded_video)
+
+    if st.button("🔍 Analyze Video", key="analyze_video", use_container_width=True):
+        with st.spinner("🔄 Extracting frames and analyzing video..."):
+            try:
+                result = predict_video(model, uploaded_video, preprocess_method)
+                _render_prediction(result, "Video", show_debug=show_debug)
+
+                metadata = result.get("metadata", {})
+                if metadata:
+                    st.markdown("**🎞️ Video Sampling Summary:**")
+                    st.write(f"- Total Frames: {metadata.get('total_frames', 'Unknown')}")
+                    st.write(f"- Sampled Frames: {metadata.get('sampled_frames', 'Unknown')}")
+                    sampled_indices = metadata.get("sampled_frame_indices", [])
+                    if sampled_indices:
+                        st.write(f"- Sampled Frame Indices: {sampled_indices}")
+            except Exception as error:
+                st.error(f"❌ Could not process the uploaded video: {error}")
+
 
 def main():
     """Main application entry point."""
-    # Apply custom CSS
     apply_custom_css()
-
-    # Render header
     render_header()
 
-    # Load model
-    model = load_model()
-
-    if model is None:
-        st.error("⚠️ Model could not be loaded. Please refresh the page or contact the administrator.")
-        return
-
-    # Render sidebar and get settings
     preprocess_method, show_debug = render_sidebar()
 
-    # Two-column layout
-    col1, col2 = st.columns(2)
+    with st.spinner("🔄 Loading AI model..."):
+        model = load_model()
 
-    with col1:
-        st.markdown("### 📤 Image Upload")
-        uploaded_file = st.file_uploader(
-            "Select an image file...",
-            type=['jpg', 'jpeg', 'png'],
-            help="Upload a JPG, JPEG, or PNG format image for deepfake analysis"
+    if getattr(model, "is_fallback", False):
+        st.warning(
+            "The remote Hugging Face model could not be loaded in this session, so the app is running with a local fallback predictor. "
+            "The interface remains functional, but the predictions are only a demo-grade approximation until the model downloads successfully."
         )
+        if getattr(model, "fallback_reason", "") and show_debug:
+            st.caption(f"Fallback reason: {model.fallback_reason}")
 
-        if uploaded_file is not None:
-            image = Image.open(uploaded_file)
-            st.image(image, caption="Input Image", use_container_width=True)
+    st.markdown("### 📥 Input Modes")
+    image_tab, webcam_tab, video_tab = st.tabs(["Image Upload", "Webcam", "Video Upload"])
 
-            if show_debug:
-                st.markdown("**🔍 Image Metadata:**")
-                st.write(f"- File Format: {image.format}")
-                st.write(f"- Color Mode: {image.mode}")
-                st.write(f"- Dimensions: {image.size}")
+    with image_tab:
+        _render_image_tab(model, preprocess_method, show_debug)
 
-            st.markdown("""
-            **Image Quality Requirements:**
-            - ✅ High-resolution images recommended
-            - ✅ Adequate illumination conditions
-            - ✅ Minimal compression artifacts
-            """)
+    with webcam_tab:
+        _render_webcam_tab(model, preprocess_method, show_debug)
 
-    with col2:
-        st.markdown("### 📊 Analysis Results")
+    with video_tab:
+        _render_video_tab(model, preprocess_method, show_debug)
 
-        if uploaded_file is not None:
-            if st.button("🔍 Analyze Image", use_container_width=True):
-                with st.spinner("🔄 Analyzing image..."):
-                    # Preprocess using selected method
-                    img = preprocess_image(image, method=preprocess_method)
-
-                    if img is None:
-                        st.error("❌ Could not process the uploaded image.")
-                        return
-
-                    if show_debug:
-                        st.markdown("**🔍 Preprocessing Pipeline Diagnostics:**")
-                        st.write(f"- Selected Method: {preprocess_method}")
-                        st.write(f"- Tensor Shape: {img.shape}")
-                        st.write(f"- Data Type: {img.dtype}")
-                        st.write(f"- Value Range: [{img.min():.4f}, {img.max():.4f}]")
-                        st.write(f"- Statistical Mean: {img.mean():.4f}")
-                        st.write(f"- Standard Deviation: {img.std():.4f}")
-
-                    # Predict
-                    img_batch = np.expand_dims(img, axis=0)
-
-                    if show_debug:
-                        st.write(f"- Input Batch Shape: {img_batch.shape}")
-
-                    prediction = model.predict(img_batch, verbose=0)
-                    probs = np.array(prediction).squeeze().astype(float)
-
-                    if show_debug:
-                        st.markdown("**🔍 Model Output Diagnostics:**")
-                        st.write(f"- Output Tensor Shape: {prediction.shape}")
-                        st.write(f"- Probability Distribution: {probs}")
-
-                    # Get results
-                    answer_idx = int(np.argmax(probs))
-                    confidence = float(probs[answer_idx]) * 100
-
-                    class_labels = ['Fake', 'Real']
-                    pred_label = class_labels[answer_idx]
-
-                    fake_confidence = float(probs[0]) * 100
-                    real_confidence = float(probs[1]) * 100
-
-                    # Display results with visual feedback
-                    if pred_label == "Fake":
-                        st.error("### 🚨 DETECTION RESULT: FAKE (AI-Generated)")
-                        st.markdown("The input image exhibits characteristics consistent with **synthetic generation** by artificial intelligence systems.")
-                    else:
-                        st.success("### ✅ DETECTION RESULT: AUTHENTIC")
-                        st.markdown("The input image exhibits characteristics consistent with **genuine photographic content**.")
-
-                    st.markdown("---")
-                    st.markdown("**📈 Classification Confidence Scores:**")
-
-                    # Fake confidence
-                    st.markdown("🚨 **Synthetic (AI-Generated):**")
-                    st.progress(fake_confidence / 100)
-                    st.write(f"**{fake_confidence:.2f}%**")
-
-                    st.markdown("")  # Spacer
-
-                    # Real confidence
-                    st.markdown("✅ **Authentic (Genuine):**")
-                    st.progress(real_confidence / 100)
-                    st.write(f"**{real_confidence:.2f}%**")
-
-                    st.markdown("---")
-
-                    # Additional info
-                    st.info(f"**Classification Output:** {pred_label} (Confidence: {confidence:.2f}%)")
-        else:
-            st.info("👆 Please upload an image file and initiate analysis to view detection results.")
-
-    # Render footer
     render_footer()
 
 
 if __name__ == "__main__":
     print("=" * 80)
-    print("🚀 DeepFake Detection System - AICS 2025")
-    print("   33rd Irish Conference on Artificial Intelligence and Cognitive Science")
+    print("🚀 DeepShield AI - Deepfake Detection System")
     print("   Developed by: Emin Cem Koyluoglu")
     print("=" * 80)
     main()

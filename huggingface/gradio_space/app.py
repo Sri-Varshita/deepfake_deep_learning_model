@@ -1,9 +1,8 @@
 """
-DeepFake Detection System - AICS 2025
+DeepShield AI - Deepfake Detection System
 Gradio Interface for Hugging Face Spaces
 
 Author: Emin Cem Koyluoglu
-Conference: 33rd Irish Conference on Artificial Intelligence and Cognitive Science
 """
 
 import gradio as gr
@@ -233,7 +232,7 @@ custom_css = """
 
 # Create Gradio interface
 with gr.Blocks(
-    title="DeepFake Detection - AICS 2025",
+    title="DeepShield AI - Deepfake Detection System",
     theme=gr.themes.Soft(
         primary_hue="purple",
         secondary_hue="blue",
@@ -243,11 +242,9 @@ with gr.Blocks(
 
     # Header
     gr.Markdown("""
-    # 🔍 DeepFake Detection System - AICS 2025
+    # 🛡️ DeepShield AI - Deepfake Detection System
 
     **Advanced AI-Generated Image Detection Using EfficientNetB7 with Attention Mechanism**
-
-    Developed for **33rd Irish Conference on Artificial Intelligence and Cognitive Science (AICS 2025)**
 
     Upload an image to detect if it's authentic or AI-generated.
     """)
@@ -333,7 +330,7 @@ with gr.Blocks(
 
     **Emin Cem Koyluoglu**
 
-    33rd Irish Conference on Artificial Intelligence and Cognitive Science (AICS 2025)
+    DeepShield AI - Deepfake Detection System
 
     ---
 
