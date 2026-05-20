@@ -95,21 +95,6 @@ def apply_custom_css():
         background: #f7fafc;
     }
 
-    /* Radio Buttons */
-    .stRadio > label {
-        font-weight: 600;
-        color: #2d3748;
-        font-size: 1rem;
-        margin-bottom: 0.5rem;
-    }
-
-    .stRadio > div {
-        background: white;
-        padding: 1rem;
-        border-radius: 10px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    }
-
     /* Checkbox */
     .stCheckbox {
         background: white;
@@ -239,6 +224,36 @@ def apply_custom_css():
         color: #000000 !important;
         font-weight: 800 !important;
         font-size: 0.95rem !important;
+    }
+
+    /* Advanced Analysis Panel */
+    .advanced-analysis-panel {
+        background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+        border: 1px solid rgba(148, 163, 184, 0.22);
+        border-radius: 18px;
+        box-shadow: 0 12px 36px rgba(15, 23, 42, 0.08);
+        padding: 1rem 1.1rem;
+        margin-top: 1rem;
+    }
+
+    .analysis-card {
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+        border: 1px solid rgba(148, 163, 184, 0.18);
+        padding: 1rem 1.1rem;
+    }
+
+    .analysis-title {
+        color: #0f172a;
+        font-weight: 800;
+        font-size: 1.05rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .analysis-subtitle {
+        color: #475569;
+        font-size: 0.95rem;
     }
 
     /* Info Box - Blue Background */

@@ -19,8 +19,4 @@ sys.path.insert(0, str(src_path))
 from app import main
 
 if __name__ == "__main__":
-    print("=" * 80)
-    print("🚀 DeepShield AI - Deepfake Detection System")
-    print("   Developed by: Emin Cem Koyluoglu")
-    print("=" * 80)
     main()

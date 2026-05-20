@@ -125,16 +125,12 @@ print("🚀 Starting DeepFake Detection System...")
 model = load_model()
 
 
-def preprocess_image(image, method="training_match"):
+def preprocess_image(image):
     """
-    Preprocess image for model inference
+    Preprocess image for model inference using the locked EfficientNet pipeline.
 
     Args:
         image: PIL Image or numpy array
-        method: Preprocessing method
-            - "training_match": BGR format, 0-255 range (RECOMMENDED)
-            - "simple_norm": RGB format, 0-1 range
-            - "efficientnet": EfficientNet ImageNet preprocessing
 
     Returns:
         Preprocessed numpy array ready for model input
@@ -143,27 +139,17 @@ def preprocess_image(image, method="training_match"):
     if isinstance(image, Image.Image):
         image = np.array(image)
 
+    if image.ndim == 2:
+        image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
+    elif image.ndim == 3 and image.shape[2] == 4:
+        image = cv2.cvtColor(image, cv2.COLOR_RGBA2RGB)
+
     # Resize to model input size
     img_resized = cv2.resize(image, (IMAGE_SIZE, IMAGE_SIZE))
 
-    if method == "training_match":
-        # Training Match: RGB -> BGR, keep 0-255 range
-        img_bgr = cv2.cvtColor(img_resized, cv2.COLOR_RGB2BGR)
-        arr = img_bgr.astype(np.float32)
-
-    elif method == "simple_norm":
-        # Simple [0,1] Normalization: RGB, normalize to 0-1
-        arr = img_resized.astype(np.float32) / 255.0
-
-    elif method == "efficientnet":
-        # EfficientNet preprocessing
-        from tensorflow.keras.applications.efficientnet import preprocess_input
-        arr = preprocess_input(img_resized)
-
-    else:
-        # Default to training match
-        img_bgr = cv2.cvtColor(img_resized, cv2.COLOR_RGB2BGR)
-        arr = img_bgr.astype(np.float32)
+    # EfficientNet preprocessing is the only supported path.
+    from tensorflow.keras.applications.efficientnet import preprocess_input
+    arr = preprocess_input(img_resized.astype(np.float32))
 
     # Add batch dimension
     arr = np.expand_dims(arr, axis=0)
@@ -171,13 +157,12 @@ def preprocess_image(image, method="training_match"):
     return arr
 
 
-def predict(image, preprocessing_method):
+def predict(image):
     """
     Predict if image is real or fake
 
     Args:
         image: Input image (PIL Image or numpy array)
-        preprocessing_method: Preprocessing method to use
 
     Returns:
         Dictionary with class probabilities for Gradio Label component
@@ -186,16 +171,8 @@ def predict(image, preprocessing_method):
         return {"Error": 1.0}
 
     try:
-        # Map method names
-        method_map = {
-            "✅ Training Match (Recommended)": "training_match",
-            "Simple [0,1] Normalization": "simple_norm",
-            "EfficientNet ImageNet": "efficientnet"
-        }
-        method = method_map.get(preprocessing_method, "training_match")
-
         # Preprocess image
-        processed_image = preprocess_image(image, method=method)
+        processed_image = preprocess_image(image)
 
         # Make prediction
         predictions = model.predict(processed_image, verbose=0)
@@ -258,18 +235,6 @@ with gr.Blocks(
                 height=400
             )
 
-            # Preprocessing method selector
-            preprocessing_method = gr.Radio(
-                choices=[
-                    "✅ Training Match (Recommended)",
-                    "Simple [0,1] Normalization",
-                    "EfficientNet ImageNet"
-                ],
-                value="✅ Training Match (Recommended)",
-                label="Preprocessing Method",
-                info="Select preprocessing method (Training Match recommended for best accuracy)"
-            )
-
             # Analyze button
             analyze_btn = gr.Button("🔍 Analyze Image", variant="primary", size="lg")
 
@@ -283,28 +248,6 @@ with gr.Blocks(
 
     # Information section
     gr.Markdown("""
-    ---
-
-    ## 📊 Preprocessing Methods
-
-    ### ✅ Training Match (Recommended)
-    - **Format:** BGR color format
-    - **Range:** 0-255 (no normalization)
-    - **Accuracy:** ~95%
-    - **Best for:** Production use
-
-    ### Simple [0,1] Normalization
-    - **Format:** RGB color format
-    - **Range:** 0-1 (normalized)
-    - **Accuracy:** ~58%
-    - **Best for:** Educational comparison
-
-    ### EfficientNet ImageNet
-    - **Format:** RGB color format
-    - **Range:** ImageNet mean/std normalization
-    - **Accuracy:** ~72%
-    - **Best for:** Transfer learning experiments
-
     ---
 
     ## 🔬 Technology Stack
@@ -347,17 +290,17 @@ with gr.Blocks(
     # Connect button to prediction function
     analyze_btn.click(
         fn=predict,
-        inputs=[input_image, preprocessing_method],
+        inputs=[input_image],
         outputs=output_result
     )
 
     # Example images (optional - can add examples here)
     # gr.Examples(
     #     examples=[
-    #         ["example1.jpg", "✅ Training Match (Recommended)"],
-    #         ["example2.jpg", "✅ Training Match (Recommended)"],
+    #         ["example1.jpg"],
+    #         ["example2.jpg"],
     #     ],
-    #     inputs=[input_image, preprocessing_method],
+    #     inputs=[input_image],
     # )
 
 # Launch the app

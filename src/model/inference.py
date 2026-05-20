@@ -11,7 +11,7 @@ import cv2
 import numpy as np
 from PIL import Image
 
-from preprocessing import preprocess_image
+from preprocessing import efficientnet_preprocess
 
 
 def _normalize_prediction_output(prediction: Any) -> np.ndarray:
@@ -62,9 +62,9 @@ def _build_result(probabilities: np.ndarray, source_type: str, metadata: Dict[st
     }
 
 
-def predict_image(model: Any, image: Image.Image, preprocess_method: str) -> Dict[str, Any]:
-    """Predict a single image and return normalized probabilities."""
-    processed = preprocess_image(image, method=preprocess_method)
+def predict_image(model: Any, image: Image.Image, preprocess_method: str = "efficientnet") -> Dict[str, Any]:
+    """Predict a single image using the locked EfficientNet preprocessing path."""
+    processed = efficientnet_preprocess(image)
     if processed is None:
         raise ValueError("Could not preprocess the uploaded image.")
 
@@ -76,7 +76,7 @@ def predict_image(model: Any, image: Image.Image, preprocess_method: str) -> Dic
 def predict_video(
     model: Any,
     video_file: Any,
-    preprocess_method: str,
+    preprocess_method: str = "efficientnet",
     max_frames: int = 12,
 ) -> Dict[str, Any]:
     """Predict a video by sampling several frames across its duration."""
@@ -109,7 +109,7 @@ def predict_video(
 
             rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             pil_frame = Image.fromarray(rgb_frame)
-            processed = preprocess_image(pil_frame, method=preprocess_method)
+            processed = efficientnet_preprocess(pil_frame)
             if processed is None:
                 continue
 

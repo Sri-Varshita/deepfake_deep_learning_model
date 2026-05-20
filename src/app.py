@@ -11,7 +11,10 @@ from PIL import Image
 import streamlit as st
 
 from model import load_model, predict_image, predict_video
-from ui import apply_custom_css, render_footer, render_header, render_sidebar
+from ui import apply_custom_css, render_analysis_panel, render_footer, render_header, render_sidebar
+
+
+DEFAULT_PREPROCESS_METHOD = "efficientnet"
 
 
 st.set_page_config(
@@ -60,7 +63,7 @@ def _render_prediction(result, source_name: str, show_debug: bool = False):
             st.json(result["metadata"])
 
 
-def _render_image_tab(model, preprocess_method: str, show_debug: bool):
+def _render_image_tab(model, show_debug: bool):
     uploaded_file = st.file_uploader(
         "Select an image file...",
         type=["jpg", "jpeg", "png"],
@@ -84,13 +87,14 @@ def _render_image_tab(model, preprocess_method: str, show_debug: bool):
     if st.button("🔍 Analyze Image", key="analyze_image", use_container_width=True):
         with st.spinner("🔄 Analyzing image..."):
             try:
-                result = predict_image(model, image, preprocess_method)
+                result = predict_image(model, image, DEFAULT_PREPROCESS_METHOD)
                 _render_prediction(result, "Image", show_debug=show_debug)
+                render_analysis_panel(model, uploaded_file, result, "Image", "image")
             except Exception as error:
                 st.error(f"❌ Could not process the uploaded image: {error}")
 
 
-def _render_webcam_tab(model, preprocess_method: str, show_debug: bool):
+def _render_webcam_tab(model, show_debug: bool):
     captured_image = st.camera_input(
         "Take a webcam snapshot for analysis",
         help="Use your device camera to capture a face or scene for deepfake analysis",
@@ -106,13 +110,14 @@ def _render_webcam_tab(model, preprocess_method: str, show_debug: bool):
     if st.button("🔍 Analyze Webcam Snapshot", key="analyze_webcam", use_container_width=True):
         with st.spinner("🔄 Analyzing webcam snapshot..."):
             try:
-                result = predict_image(model, image, preprocess_method)
+                result = predict_image(model, image, DEFAULT_PREPROCESS_METHOD)
                 _render_prediction(result, "Webcam Snapshot", show_debug=show_debug)
+                render_analysis_panel(model, captured_image, result, "Webcam Snapshot", "image")
             except Exception as error:
                 st.error(f"❌ Could not process the webcam image: {error}")
 
 
-def _render_video_tab(model, preprocess_method: str, show_debug: bool):
+def _render_video_tab(model, show_debug: bool):
     uploaded_video = st.file_uploader(
         "Select a video file...",
         type=["mp4", "mov", "avi", "m4v", "webm"],
@@ -129,7 +134,7 @@ def _render_video_tab(model, preprocess_method: str, show_debug: bool):
     if st.button("🔍 Analyze Video", key="analyze_video", use_container_width=True):
         with st.spinner("🔄 Extracting frames and analyzing video..."):
             try:
-                result = predict_video(model, uploaded_video, preprocess_method)
+                result = predict_video(model, uploaded_video, DEFAULT_PREPROCESS_METHOD)
                 _render_prediction(result, "Video", show_debug=show_debug)
 
                 metadata = result.get("metadata", {})
@@ -140,6 +145,8 @@ def _render_video_tab(model, preprocess_method: str, show_debug: bool):
                     sampled_indices = metadata.get("sampled_frame_indices", [])
                     if sampled_indices:
                         st.write(f"- Sampled Frame Indices: {sampled_indices}")
+
+                render_analysis_panel(model, uploaded_video, result, "Video", "video")
             except Exception as error:
                 st.error(f"❌ Could not process the uploaded video: {error}")
 
@@ -149,7 +156,7 @@ def main():
     apply_custom_css()
     render_header()
 
-    preprocess_method, show_debug = render_sidebar()
+    show_debug = render_sidebar()
 
     with st.spinner("🔄 Loading AI model..."):
         model = load_model()
@@ -166,20 +173,16 @@ def main():
     image_tab, webcam_tab, video_tab = st.tabs(["Image Upload", "Webcam", "Video Upload"])
 
     with image_tab:
-        _render_image_tab(model, preprocess_method, show_debug)
+        _render_image_tab(model, show_debug)
 
     with webcam_tab:
-        _render_webcam_tab(model, preprocess_method, show_debug)
+        _render_webcam_tab(model, show_debug)
 
     with video_tab:
-        _render_video_tab(model, preprocess_method, show_debug)
+        _render_video_tab(model, show_debug)
 
     render_footer()
 
 
 if __name__ == "__main__":
-    print("=" * 80)
-    print("🚀 DeepShield AI - Deepfake Detection System")
-    print("   Developed by: Emin Cem Koyluoglu")
-    print("=" * 80)
     main()

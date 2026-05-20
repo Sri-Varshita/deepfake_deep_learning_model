@@ -1,5 +1,5 @@
 """Image preprocessing utilities."""
 
-from .image_processor import preprocess_image, DEFAULT_IMAGE_SIZE
+from .image_processor import DEFAULT_IMAGE_SIZE, efficientnet_preprocess, preprocess_image
 
-__all__ = ['preprocess_image', 'DEFAULT_IMAGE_SIZE']
+__all__ = ["preprocess_image", "efficientnet_preprocess", "DEFAULT_IMAGE_SIZE"]
